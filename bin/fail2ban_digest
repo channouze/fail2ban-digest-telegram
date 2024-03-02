@@ -270,7 +270,7 @@ def telegram_digest(db, token, chatid, delete, sort):
 		date_now = date_now,
 		digest = dgst
 	)
-    requests.post(telegram_api_url + telegram_bottoken + '/sendMessage', json = {chat_id : telegram_chatid, text : msg})
+    requests.post(telegram_api_url + telegram_bottoken + '/sendMessage', data = {chat_id : telegram_chatid, text : msg})
     return
 
 def main(args):
