@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-# fail2ban-digest: an email digest aggregator for fail2ban.
+# fail2ban-digest-telegram: a telegram digest aggregator for fail2ban.
 # Copyright (C) 2017 Enrico Tagliavini <enrico.tagliavini@gmail.com>
+# Modified by channouze
 # 
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -19,12 +20,11 @@
 
 from datetime import datetime, timedelta, timezone
 from dbm import gnu as dbm
-from email.message import EmailMessage
-from smtplib import SMTP
 from string import Template
 from time import sleep
 from traceback import print_exc
 
+import requests
 import argparse
 import atexit
 import errno
@@ -36,14 +36,19 @@ import sys
 db_location = '/var/lib/fail2ban/digest'
 db_creation_date_key = u'db_creation_date'
 db_date_format = '%Y-%m-%d %H:%M:%S'
+
+telegram_api_url = 'https://api.telegram.org/bot'
+telegram_bottoken = 'token'
+telegram_chatid = 'id'
+
 default_mail_template = Template('''Hi,\n
-This is a digest email of the ${count} banned IPs between ${creation_date} and ${date_now}:
+This is a digest of the ${count} banned IPs between ${creation_date} and ${date_now}:
 
 ${digest}
 
 Regards,
 
-Fail2ban Digest
+Fail2ban Digest Telegram
 ''')
 default_html_template = Template('''<!DOCTYPE html>
 <html>
@@ -79,7 +84,7 @@ default_html_template = Template('''<!DOCTYPE html>
 </head>
 <body>
   <p>Hi,</p>
-  <p>This is a digest email of the <b>${count}</b> banned IPs between <b>${creation_date}</b> and <b>${date_now}</b>:</p>
+  <p>This is a digest of the <b>${count}</b> banned IPs between <b>${creation_date}</b> and <b>${date_now}</b>:</p>
   <table>
     <tr>
       <th style="text-align: center">#</th>
@@ -89,7 +94,7 @@ default_html_template = Template('''<!DOCTYPE html>
 ${digest}
   </table>
   <p>Regards,</p>
-  <p><a href="https://github.com/enricotagliavini/fail2ban-digest">Fail2Ban Digest</a><p>
+  <p><a href="https://github.com/channouze/fail2ban-digest-telegram">Fail2Ban Digest Telegram</a><p>
 </body>
 <html>
 ''')
@@ -252,6 +257,22 @@ def mail_digest(db, mail_to, mail_from, delete, html, quiet, sort):
 	mta.quit()
 	return
 
+def telegram_digest(db, token, chatid, delete, sort):
+    msg = String()
+	date_now = datetime.now().strftime(db_date_format)
+	count, creation_date, dgst, dgst_html = digest(db, delete, sort)
+    if dgst == '':
+        dgst = '    No ban event recorded for the named time frame.'
+		dgst_html = html_error_template.substitute(error_msg = dgst)
+    msg = default_mail_template.substitute(
+		count = count,
+		creation_date = creation_date,
+		date_now = date_now,
+		digest = dgst
+	)
+    requests.post(telegram_api_url + telegram_bottoken + '/sendMessage', json = {chat_id : telegram_chatid, text : msg})
+    return
+
 def main(args):
 	if args.cmd == 'add':
 		add(args.database, args.ip)
@@ -259,6 +280,8 @@ def main(args):
 		print(digest(args.database, args.delete, args.sort)[2])
 	elif args.cmd == 'maildigest':
 		mail_digest(args.database, args.to, args.mail_from, args.delete, args.html, args.quiet, args.sort)
+    elif args.cmd == 'telegramdigest':
+        telegram_digest(args.database, args.token, args.chatid, args.delete, args.sort)
 	elif args.cmd is None:
 		print('No action specified')
 	return

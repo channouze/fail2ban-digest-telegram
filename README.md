@@ -1,14 +1,15 @@
-## fail2ban-digest: email digest aggregator for fail2ban
+## fail2ban-digest-telegram: telegram digest aggregator for fail2ban
+## forked from forked from enricotagliavini/fail2ban-digest
 
-Fail2ban can be annoying for the large volumes of emails it can send.
-Disabling email sending completely can solve the annoyance, but leaves
-the Admin uninformed. With fail2ban-digest you can configure a arbitrary
+Fail2ban can be annoying for the large volumes of notifications it can send.
+Disabling notifications sending completely can solve the annoyance, but leaves
+the Admin uninformed. With fail2ban-digest-telegram you can configure a arbitrary
 period digest to be send, like
 
 
 	Hi,
 
-	   this is a digest email of banned IPs since 2017-05-15 00:11:41 UTC and 2017-05-15 01:00:03
+	   this is a digest of banned IPs since 2017-05-15 00:11:41 UTC and 2017-05-15 01:00:03
 
 	 20 event(s) for IP 0.0.0.1                                   : 2017-05-14 03:20:54, 2017-05-14 04:03:28, 2017-05-14 04:45:03, 2017-05-14 05:27:02, 2017-05-14 06:50:40, 2017-05-14 07:18:32, 2017-05-14 08:00:38, 2017-05-14 08:43:21, 2017-05-14 09:26:09, 2017-05-14 10:22:46, 2017-05-14 10:50:49, 2017-05-14 11:32:33, 2017-05-14 12:28:12, 2017-05-14 13:38:53, 2017-05-14 14:21:42, 2017-05-14 15:04:04, 2017-05-14 15:46:40, 2017-05-14 16:43:08, 2017-05-14 17:25:12, 2017-05-14 18:07:17
 	  4 event(s) for IP 0.0.0.2                                   : 2017-05-14 18:35:51, 2017-05-14 19:05:13, 2017-05-14 22:12:05, 2017-05-14 23:46:37
@@ -24,7 +25,7 @@ The digest can also be shown on the command line by calling
 	  2 event(s) for IP 0.0.0.1                                   : 2017-05-15 06:48:35, 2017-05-15 07:06:37
 	  1 event(s) for IP 0.0.0.2                                   : 2017-05-15 16:09:51
 
-Using the digest action for command line display will not empty the database by default, while send the email digest will empty it.
+Using the digest action for command line display will not empty the database by default, while send the telegram digest will empty it.
 This can be changed by using the `--delete` and `--no-delete` options.
 
 Setup
