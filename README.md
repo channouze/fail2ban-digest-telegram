@@ -1,5 +1,5 @@
 ## fail2ban-digest-telegram: telegram digest aggregator for fail2ban
-## forked from forked from enricotagliavini/fail2ban-digest
+forked from enricotagliavini/fail2ban-digest
 
 Fail2ban can be annoying for the large volumes of notifications it can send.
 Disabling notifications sending completely can solve the annoyance, but leaves
